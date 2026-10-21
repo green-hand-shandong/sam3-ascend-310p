@@ -1,0 +1,50 @@
+{
+  "model": "sam2",
+  "dir": "/data1/models/SAM2.1",
+  "params_M": 216.9,
+  "inputs": {
+    "pixel_values": [
+      1,
+      3,
+      1024,
+      1024
+    ],
+    "input_points": [
+      1,
+      1,
+      1,
+      2
+    ],
+    "input_labels": [
+      1,
+      1
+    ]
+  },
+  "first_forward_s": 1016.6,
+  "avg_latency_s": 0.877,
+  "output_shapes": {
+    "iou_scores": [
+      1,
+      1,
+      3
+    ],
+    "pred_masks": [
+      1,
+      1,
+      3,
+      256,
+      256
+    ],
+    "object_score_logits": [
+      1,
+      1,
+      1
+    ]
+  },
+  "nan": {
+    "iou_scores": false,
+    "pred_masks": false,
+    "object_score_logits": false
+  },
+  "mem_reserved_GB": 3.66
+}

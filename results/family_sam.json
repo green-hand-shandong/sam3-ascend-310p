@@ -1,0 +1,39 @@
+{
+  "model": "sam",
+  "dir": "/data1/models/SAM-vit-h",
+  "params_M": 641.1,
+  "inputs": {
+    "pixel_values": [
+      1,
+      3,
+      1024,
+      1024
+    ],
+    "input_boxes": [
+      1,
+      1,
+      4
+    ]
+  },
+  "first_forward_s": 268.3,
+  "avg_latency_s": 1.564,
+  "output_shapes": {
+    "iou_scores": [
+      1,
+      1,
+      3
+    ],
+    "pred_masks": [
+      1,
+      1,
+      3,
+      256,
+      256
+    ]
+  },
+  "nan": {
+    "iou_scores": false,
+    "pred_masks": false
+  },
+  "mem_reserved_GB": 7.32
+}

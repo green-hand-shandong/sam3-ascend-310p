@@ -196,7 +196,25 @@ scores = out["pred_logits"][0].sigmoid()   # top-k 即检测结果置信度
 2. **attention 换原生融合**：`torch_npu.npu_fusion_attention` 替换 manual_sdpa
 3. **torchair / ONNX→ATC om**：图模式整图下沉，消除算子调度开销，最终部署形态
 
-## 8. FAQ
+## 8. SAM 家族扩展（SAM / SAM2 / MedSAM）
+
+`ascend310p_compat` 兼容层打通后，SAM 家族其他模型只是"新的权重 + 少量新坑"：
+
+| 模型 | transformers 类 | 新增坑 | 结果(fp32 @1024) |
+|---|---|---|---|
+| SAM (vit-huge) | `SamModel` | 无（补丁 1/3/附 已覆盖） | 1.56s / 7.3GB |
+| SAM 2.1 | `Sam2Model` | 4D bicubic(pos-embed) 触发 ResizeD | 0.88s / 3.7GB |
+| MedSAM | `SamModel` | processor 输出 `input_boxes` 为 float64 | 0.56s / 3.9GB |
+
+通用测试脚本 `scripts/06_family_test.py`（`--model medsam|sam|sam2|sam3`）与端到端 `07_medsam_e2e.py`。
+
+补充的坑与解法：
+
+1. **SAM2 位置编码插值是 4D bicubic**（`modeling_sam2.py` `_get_pos_embed`），每前向必经。bicubic→bilinear 替代差异过大（实测 max diff 1.4，均值 0.68，不可接受），正确做法是 **CPU 计算 + 按形状缓存**（输入是固定权重 pos_embed，缓存命中后零开销）——即补丁 2 的最终形态
+2. **激活函数拒绝非连续输入**：`SamLayerNorm(channels_first)` 内部 `permute → layer_norm → permute` 产出非连续张量，310P 的 GELU 直接报 `Only c10::MemoryFormat::Contiguous is supported`。解法是补丁 3（激活函数自动 `.contiguous()` 守卫）。注意最小复现时先确认张量的 is_contiguous——`transpose(2,3).reshape(...)` 后是连续的，单纯 reshape 不是触发点，触发的是 LayerNorm 的 permute 输出
+3. **fp64 输入**：`SamProcessor` 输出 `input_boxes` 为 float64，310P 的 AsStrided 不支持 DT_DOUBLE，`.to(torch.float32)` 即可。定位方法：报错信息里 "data type DT_DOUBLE ... not supported" 直接指向 dtype 问题
+
+## 9. FAQ
 
 **Q: 新容器里 `torch.npu.device_count()` 为 0 / aclInit 报 507899 Resource Busy？**
 A: 驱动按**容器命名空间**独占设备：一张卡被某个容器打开后即绑定，其他容器（包括新建的）无法初始化。dmesg 可见 `[uda_occupy_dev_by_ns] Conflict open udevid`。
@@ -211,7 +229,7 @@ A: NPU 版 torch/torch_npu 与 CANN 版本强绑定，随镜像发行。pip 装�
 **Q: transformers 报 tokenizers 版本错误？**
 A: transformers 5.13 要求 `tokenizers>=0.22,<=0.23.0`，装 0.22.2 即可。
 
-## 9. 复现清单
+## 10. 复现清单
 
 ```bash
 git clone https://github.com/green-hand-shandong/sam3-ascend-310p.git

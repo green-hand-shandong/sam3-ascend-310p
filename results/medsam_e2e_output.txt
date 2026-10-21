@@ -1,0 +1,7 @@
+MedSAM (flaviagiammarino/medsam-vit-base, HF SamModel) - Atlas 300I Duo (310P3, device 9) - fp32
+合成医学图(512x512, 椭圆病灶) + box 提示 [210,200,390,320]
+input box(xyxy): [210, 200, 390, 320] | dtype: torch.float32 (processor 输出 float64 需转)
+forward 51.8s (含编译; 热身 0.56s)
+iou_scores: [0.6317, 0.728, 0.653]
+best mask #1: 覆盖 4199 px @256x256 (6.4%)
+box 内部覆盖率: 99.9% (病灶完整分割)
