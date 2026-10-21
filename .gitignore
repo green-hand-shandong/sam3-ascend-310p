@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# 运行产物
+logs/
+fusion_result.json
+ascend310p_compat.egg-info/
+kernel_meta/
+*.log
+
+# 大文件
+wheels/
+*.pt
+*.safetensors
+*.bin
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store

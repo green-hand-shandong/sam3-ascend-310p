@@ -1,0 +1,303 @@
+{
+  "env": {
+    "torch": "2.10.0+cpu",
+    "torch_npu": "2.10.0.post4",
+    "device_count": 1,
+    "device_name": "Ascend310P3",
+    "sdpa_patched": true
+  },
+  "ops": [
+    {
+      "name": "linear_mlp",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0522308349609375,
+      "mean_abs_diff": 0.007492890115827322,
+      "nan_on_npu": false
+    },
+    {
+      "name": "linear_qkv_fused",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.05060911178588867,
+      "mean_abs_diff": 0.007490022573620081,
+      "nan_on_npu": false
+    },
+    {
+      "name": "layernorm_vit",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 9.5367431640625e-07,
+      "mean_abs_diff": 1.8845881299967004e-08,
+      "nan_on_npu": false
+    },
+    {
+      "name": "gelu_exact",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0004737377166748047,
+      "mean_abs_diff": 8.518227696185932e-05,
+      "nan_on_npu": false
+    },
+    {
+      "name": "gelu_tanh",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 4.76837158203125e-07,
+      "mean_abs_diff": 1.6877301334261574e-08,
+      "nan_on_npu": false
+    },
+    {
+      "name": "softmax_global_attn",
+      "note": "global attn map, fp32 约 340MB",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 1.6763806343078613e-08,
+      "mean_abs_diff": 4.1153060126308816e-11,
+      "nan_on_npu": false
+    },
+    {
+      "name": "softmax_window_attn",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 1.1920928955078125e-07,
+      "mean_abs_diff": 2.839461721304559e-10,
+      "nan_on_npu": false
+    },
+    {
+      "name": "sdpa_native_no_mask(expect_fail)",
+      "ok": false,
+      "error": "RuntimeError('can not cast format when output is input\\n[ERROR] 2026-10-20-09:02:39 (PID:3116573, Device:0, RankID:-1) ERR01007 OPS feature not supported')",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/03_op_test.py\", line 103, in run_case\n    npu_out = fn(*npu_in)\n              ^^^^^^^^^^^\n  File \"/tmp/03_op_test.py\", line 143, in <lambda>\n    run_case(\"sdpa_native_no_mask(expect_fail)\", lambda q, k, v: F.scaled_dot_product_attention(q, k, v), *_qkv)\n                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: can not cast format when output is input\n[ERROR] 2026-10-20-09:02:39 (PID:3116573, Device:0, RankID:-1) ERR01007 OPS feature not supported\n"
+    },
+    {
+      "name": "sdpa_manual_no_mask",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.00021389126777648926,
+      "mean_abs_diff": 7.817767254891805e-06,
+      "nan_on_npu": false
+    },
+    {
+      "name": "sdpa_manual_bool_mask",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.00021389126777648926,
+      "mean_abs_diff": 7.817767254891805e-06,
+      "nan_on_npu": false
+    },
+    {
+      "name": "rope_rotate_half",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "nan_on_npu": false
+    },
+    {
+      "name": "conv2d_patch_embed_14x14_s14",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.046848297119140625,
+      "mean_abs_diff": 0.005660299211740494,
+      "nan_on_npu": false
+    },
+    {
+      "name": "conv2d_neck_1x1",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.027342796325683594,
+      "mean_abs_diff": 0.0037569268606603146,
+      "nan_on_npu": false
+    },
+    {
+      "name": "conv2d_neck_3x3_pad1",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.07365226745605469,
+      "mean_abs_diff": 0.011197667568922043,
+      "nan_on_npu": false
+    },
+    {
+      "name": "conv_transpose2d_upsample_k2s2",
+      "note": "SAM neck 上采样",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.078704833984375,
+      "mean_abs_diff": 0.009068705141544342,
+      "nan_on_npu": false
+    },
+    {
+      "name": "groupnorm_neck",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 9.5367431640625e-07,
+      "mean_abs_diff": 3.545696358742134e-08,
+      "nan_on_npu": false
+    },
+    {
+      "name": "embedding_text_vocab49k",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "nan_on_npu": false
+    },
+    {
+      "name": "index_select_patch_unroll",
+      "note": "SAM ViT 高分辨率 patch unroll 特征索引",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "nan_on_npu": false
+    },
+    {
+      "name": "interpolate_bilinear_fpn",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 7.152557373046875e-07,
+      "mean_abs_diff": 3.07702769930529e-08,
+      "nan_on_npu": false
+    },
+    {
+      "name": "sigmoid",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 1.1920928955078125e-07,
+      "mean_abs_diff": 2.524046305296679e-09,
+      "nan_on_npu": false
+    },
+    {
+      "name": "topk_values",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "nan_on_npu": false
+    },
+    {
+      "name": "masked_fill_causal",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "nan_on_npu": false
+    },
+    {
+      "name": "bmm_einsum_attn",
+      "note": "DETR cross-attn: query 900 x memory 5184",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.017900466918945312,
+      "mean_abs_diff": 0.0018506695050746202,
+      "nan_on_npu": false
+    },
+    {
+      "name": "clamp_div_cxcywh_to_xyxy",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0001220703125,
+      "mean_abs_diff": 2.8546651265060063e-06,
+      "nan_on_npu": false
+    },
+    {
+      "name": "cumsum_int",
+      "note": "",
+      "dtype": "torch.int64",
+      "ok": true,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "nan_on_npu": false
+    },
+    {
+      "name": "arange_float",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "nan_on_npu": false
+    },
+    {
+      "name": "fp16_sdpa_manual",
+      "note": "",
+      "dtype": "torch.float16",
+      "ok": true,
+      "max_abs_diff": 0.0001220703125,
+      "mean_abs_diff": 7.795943020028062e-06,
+      "nan_on_npu": false
+    },
+    {
+      "name": "fp16_linear_mlp",
+      "note": "",
+      "dtype": "torch.float16",
+      "ok": true,
+      "max_abs_diff": 0.0625,
+      "mean_abs_diff": 7.6037222243030556e-06,
+      "nan_on_npu": false
+    },
+    {
+      "name": "composite_vit_block_global",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0004746764898300171,
+      "mean_abs_diff": 7.161731628002599e-05,
+      "nan_on_npu": false
+    },
+    {
+      "name": "composite_vit_block_window",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0004773437976837158,
+      "mean_abs_diff": 7.229459879454225e-05,
+      "nan_on_npu": false
+    },
+    {
+      "name": "composite_neck_block",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.0033156871795654297,
+      "mean_abs_diff": 0.0004496852052398026,
+      "nan_on_npu": false
+    },
+    {
+      "name": "composite_detr_cross_attn",
+      "note": "",
+      "dtype": "torch.float32",
+      "ok": true,
+      "max_abs_diff": 0.00047585368156433105,
+      "mean_abs_diff": 7.806959911249578e-05,
+      "nan_on_npu": false
+    },
+    {
+      "name": "interpolate_bicubic_pos_embed",
+      "ok": false,
+      "max_abs_diff": null,
+      "raw": "[ERROR] interpolate_bicubic_pos_embed: RuntimeError('The Inner error is reported as above. The process exits for this inner error, and the current working operator name is ResizeD.\\nSince the operator is called asynchronously, the stacktrace may be inaccurate. If you want to get the accurate stacktrace, please set the environment variable ASCEND_LAUNCH_BLOCKING=1.\\nNote: ASCEND_LAUNCH_BLOCKING=1 will force ops to run in synchronous mode, resulting in performance degradation. Please unset ASCEND_LAUNCH_BLOCKING in time after debugging.\\n[ERROR] 2026-10-20-09:13:51 (PID:3135590, Device:0, RankID:-1) ERR00100 PTA call acl api failed.\\n[PID: 3135590] 2026-10-20-09:13:51.005.936 Unsupported_Operator(EZ3003): No supported Ops kernel and engine are found for [ResizeD1], optype [ResizeD].\\n        Possible Cause: The operator is not supported by the system. Therefore, no hit is found in any operator information library.\\n        Solution: 1. Check that the OPP component is installed properly. 2. Submit an issue to request for the support of this operator type.\\nTraceBack (most recent call last):\\n        Failed to select engine for [ResizeD1][ResizeD].[FUNC:operator()][FILE:engine_place.cc][LINE:152]\\n        RunAllSubgraphs failed, graph=online.[FUNC:RunAllSubgraphs][FILE:engine_place.cc][LINE:125]\\n        build graph failed, graph id:0, ret:4294967295[FUNC:BuildModelWithGraphId][FILE:ge_generator.cc][LINE:1629]\\n        [Build][SingleOpModel]call ge interface generator.BuildSingleOpModel failed. ge result = 4294967295[FUNC:ReportCallError][FILE:log_inner.cpp][LINE:148]\\n        [Build][Op]Fail to build op model[FUNC:ReportInnerError][FILE:log_inner.cpp][LINE:132]\\n        build op model failed, result = 500002[FUNC:ReportInnerError][FILE:log_inner.cpp][LINE:132]\\n')"
+    }
+  ],
+  "composite": []
+}

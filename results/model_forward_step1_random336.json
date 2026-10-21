@@ -1,0 +1,12 @@
+{
+  "compare_336_random_weights": {
+    "max_abs_diff": {
+      "pred_masks": 0.000384,
+      "pred_boxes": 4e-05,
+      "pred_logits": 0.000268,
+      "presence_logits": 3e-06,
+      "semantic_seg": 0.001051,
+      "decoder_reference_boxes": 2.6e-05
+    }
+  }
+}

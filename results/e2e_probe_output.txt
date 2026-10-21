@@ -1,0 +1,11 @@
+SAM3 (facebook/sam3, HF safetensors) - Atlas 300I Duo (310P3, device 14) - fp32
+image: assets/sam3.1_diagram.png  prompt: "diagram"
+inputs: pixel_values (1, 3, 1008, 1008)
+NPU forward done in 87.7s (首跑含 CANN 在线编译; 热身后 2.4s)
+prompt='diagram' top5 scores: [0.918, 0.2009, 0.1728, 0.1718, 0.1661]
+  score=0.9180 box(xyxy@1008)=[-500, -494, 505, 511]
+  score=0.2009 box(xyxy@1008)=[-176, -56, 699, 625]
+  score=0.1728 box(xyxy@1008)=[388, 94, 1388, 687]
+  score=0.1718 box(xyxy@1008)=[-170, -171, 690, 748]
+  score=0.1661 box(xyxy@1008)=[12, 88, 266, 683]
+presence logit: 0.2990

@@ -1,0 +1,55 @@
+{
+  "load": {
+    "source": "model.safetensors (HF format, from_pretrained)"
+  },
+  "text": {
+    "prompt": "person",
+    "input_ids": [
+      49406,
+      2533,
+      49407,
+      49407,
+      49407,
+      49407,
+      49407,
+      49407
+    ]
+  },
+  "perf_1008": {
+    "output_shapes": {
+      "pred_masks": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "pred_boxes": [
+        1,
+        200,
+        4
+      ],
+      "pred_logits": [
+        1,
+        200
+      ],
+      "presence_logits": [
+        1,
+        1
+      ],
+      "semantic_seg": [
+        1,
+        1,
+        288,
+        288
+      ],
+      "decoder_reference_boxes": [
+        6,
+        1,
+        200,
+        4
+      ]
+    },
+    "avg_latency_s": 2.405,
+    "mem_reserved_GB": 7.5
+  }
+}

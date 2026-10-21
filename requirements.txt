@@ -1,0 +1,12 @@
+# 在宿主机/非 NPU 环境仅用于下载权重与处理结果
+modelscope>=1.39
+huggingface_hub
+pillow
+
+# NPU 容器内(依赖随 CANN 镜像提供, 这里仅列 Python 侧):
+#   torch / torch-npu / torchvision 由镜像(如 quay.io/ascend/vllm-ascend)自带, 勿用 pip 覆盖
+transformers>=5.13.1        # SAM3 系列模型最低版本
+tokenizers>=0.22.0,<0.23.1  # transformers 5.13 的版本约束
+safetensors
+pillow
+numpy
