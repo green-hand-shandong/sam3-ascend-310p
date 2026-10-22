@@ -196,7 +196,22 @@ scores = out["pred_logits"][0].sigmoid()   # top-k 即检测结果置信度
 2. **attention 换原生融合**：`torch_npu.npu_fusion_attention` 替换 manual_sdpa
 3. **torchair / ONNX→ATC om**：图模式整图下沉，消除算子调度开销，最终部署形态
 
-## 8. SAM 家族扩展（SAM / SAM2 / MedSAM）
+## 8. SAM3.1 原始权重转换（Meta → HF）
+
+HF 官方提供了转换脚本（`transformers/src/transformers/models/sam3/convert_sam3_to_hf.py`），但它面向 `sam3.pt`（顶层无前缀）。`sam3.1_multiplex.pt` 的实际结构有四处不同，`scripts/08_convert_sam31.py` 逐一处理：
+
+| 差异 | 官方脚本假设 | sam3.1 multiplex 实际 | 处理 |
+|---|---|---|---|
+| 顶层前缀 | `sam3_model.` | `detector.`/`tracker.` | 剥 `detector.` 前缀，tracker 部分跳过 |
+| neck 模块名 | `convs.N` | 0-2 级改名 `interactive_convs`/`propagation_convs`（`convs` 仍存在） | 不用动：detector 主路径消费 `convs`，另两组是 `deepcopy` 出来的训练旁路（Meta `necks.py` L215-216） |
+| neck 级数 | `scale_factors=[4,2,1,0.5]`（4 级） | 3 级（`[4,2,1]`，Meta TriNeck） | 构建 Sam3Model 时覆盖 `vision_config.scale_factors=[4.0,2.0,1.0]`。注意 ModelScope config.json 里的 4 级是旧默认值，与真实权重不符 |
+| geometry 命名 | `boxes_*` | `points_*` | 加 `points→boxes` 改名映射 |
+
+其余沿用官方步骤：合并 QKV 拆分（`attn.qkv` / `in_proj_*`）、视觉 pos_embed 剥离 cls token（577→576）、CLIP `text_projection` 转置。
+
+**验证标准**：`missing=0` 即转换完整。剩余 unexpected 应全部落在两类预期内——interactive/propagation 副本（约 36 个）与 rope 频率缓冲（32 个，HF 在线计算）。转换后 NPU fp32 @1008 前向 2.39s/7.5GB、无 NaN，端到端输出连贯。
+
+## 9. SAM 家族扩展（SAM / SAM2 / MedSAM）
 
 `ascend310p_compat` 兼容层打通后，SAM 家族其他模型只是"新的权重 + 少量新坑"：
 
@@ -214,7 +229,7 @@ scores = out["pred_logits"][0].sigmoid()   # top-k 即检测结果置信度
 2. **激活函数拒绝非连续输入**：`SamLayerNorm(channels_first)` 内部 `permute → layer_norm → permute` 产出非连续张量，310P 的 GELU 直接报 `Only c10::MemoryFormat::Contiguous is supported`。解法是补丁 3（激活函数自动 `.contiguous()` 守卫）。注意最小复现时先确认张量的 is_contiguous——`transpose(2,3).reshape(...)` 后是连续的，单纯 reshape 不是触发点，触发的是 LayerNorm 的 permute 输出
 3. **fp64 输入**：`SamProcessor` 输出 `input_boxes` 为 float64，310P 的 AsStrided 不支持 DT_DOUBLE，`.to(torch.float32)` 即可。定位方法：报错信息里 "data type DT_DOUBLE ... not supported" 直接指向 dtype 问题
 
-## 9. FAQ
+## 10. FAQ
 
 **Q: 新容器里 `torch.npu.device_count()` 为 0 / aclInit 报 507899 Resource Busy？**
 A: 驱动按**容器命名空间**独占设备：一张卡被某个容器打开后即绑定，其他容器（包括新建的）无法初始化。dmesg 可见 `[uda_occupy_dev_by_ns] Conflict open udevid`。
@@ -229,7 +244,7 @@ A: NPU 版 torch/torch_npu 与 CANN 版本强绑定，随镜像发行。pip 装�
 **Q: transformers 报 tokenizers 版本错误？**
 A: transformers 5.13 要求 `tokenizers>=0.22,<=0.23.0`，装 0.22.2 即可。
 
-## 10. 复现清单
+## 11. 复现清单
 
 ```bash
 git clone https://github.com/green-hand-shandong/sam3-ascend-310p.git

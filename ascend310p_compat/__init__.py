@@ -22,13 +22,30 @@ from .attention import enable_manual_sdpa, manual_sdpa
 from .env import assert_npu_ready, print_env
 from .interpolate import patch_interpolate
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "enable_manual_sdpa",
     "manual_sdpa",
     "patch_interpolate",
     "patch_activations",
+    "patch_all",
     "assert_npu_ready",
     "print_env",
 ]
+
+
+def patch_all(verbose=True):
+    """一键打全部 310P 补丁（SDPA / interpolate / activations）。模型上卡前调用。
+
+    用法:
+        import ascend310p_compat
+        ascend310p_compat.patch_all()
+        model = model.to("npu")
+    """
+    enable_manual_sdpa(verbose=False)
+    patch_interpolate(verbose=False)
+    patch_activations(verbose=False)
+    if verbose:
+        print(f"[ascend310p_compat {__version__}] all patches applied: "
+              "sdpa->manual, interpolate(bicubic->CPU cached, linear->bilinear), activations->contiguous guard")

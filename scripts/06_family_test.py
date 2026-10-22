@@ -23,11 +23,9 @@ import torch
 import torch_npu  # noqa: F401
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from ascend310p_compat import enable_manual_sdpa, patch_activations, patch_interpolate  # noqa: E402
+from ascend310p_compat import patch_all  # noqa: E402
 
-enable_manual_sdpa(verbose=False)
-patch_interpolate(verbose=False)
-patch_activations(verbose=False)
+patch_all(verbose=False)
 
 OUT = os.environ.get("RESULTS_DIR", os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results"))
@@ -74,10 +72,11 @@ def main():
     ap.add_argument("--model", required=True, choices=["medsam", "sam", "sam2", "sam3"])
     ap.add_argument("--dir", required=True)
     ap.add_argument("--cpu-compare", action="store_true", help="额外做 CPU vs NPU 对比(慢)")
+    ap.add_argument("--dtype", default="fp32", choices=["fp32", "fp16"], help="NPU 前向精度")
     args = ap.parse_args()
 
     dev = "npu"
-    RES = {"model": args.model, "dir": args.dir}
+    RES = {"model": args.model, "dir": args.dir, "dtype": args.dtype}
 
     print(f"[{args.model}] loading from {args.dir}")
     model, cfg = load_model(args.model, args.dir)
@@ -97,7 +96,12 @@ def main():
     print(f"[{args.model}] NPU fp32 forward")
     try:
         model = model.to(dev)
-        ip_npu = {k: v.to(dev) for k, v in inputs.items()}
+        if args.dtype == "fp16":
+            model = model.half()
+            ip_npu = {k: (v.to(dev, dtype=torch.float16) if v.is_floating_point() else v.to(dev))
+                      for k, v in inputs.items()}
+        else:
+            ip_npu = {k: v.to(dev) for k, v in inputs.items()}
         t0 = time.time()
         out = fwd(model, ip_npu)
         torch.npu.synchronize()
@@ -126,7 +130,9 @@ def main():
         print("  [ERROR]", repr(e)[:200])
 
     # --- CPU 对比（可选）
-    if args.cpu_compare and "npu_error" not in RES:
+    if args.dtype == "fp16" and args.cpu_compare:
+        print("  [warn] --cpu-compare 与 --dtype fp16 不支持同时使用, 跳过 CPU 对比")
+    if args.cpu_compare and args.dtype == "fp32" and "npu_error" not in RES:
         try:
             model = model.to("cpu")
             out_cpu = fwd(model, inputs)

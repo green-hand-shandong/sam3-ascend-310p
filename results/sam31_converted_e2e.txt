@@ -1,0 +1,4 @@
+SAM3.1 (facebook/sam3.1 sam3.1_multiplex.pt -> scripts/08_convert_sam31.py -> /data1/models/SAM3.1-hf)
+转换报告: missing=0, unexpected=70 (全部为预期: interactive/propagation neck 副本 + rope 频率缓冲)
+NPU fp32 @1008: 2.390s, 7.49GB, 输出无 NaN
+e2e (diagram 提示): top5 scores 0.554/0.554/0.552/0.551/0.551, 框连贯

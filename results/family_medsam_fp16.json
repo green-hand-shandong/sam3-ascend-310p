@@ -1,0 +1,40 @@
+{
+  "model": "medsam",
+  "dir": "/data1/models/MedSAM",
+  "dtype": "fp16",
+  "params_M": 93.7,
+  "inputs": {
+    "pixel_values": [
+      1,
+      3,
+      1024,
+      1024
+    ],
+    "input_boxes": [
+      1,
+      1,
+      4
+    ]
+  },
+  "first_forward_s": 439.1,
+  "avg_latency_s": 0.348,
+  "output_shapes": {
+    "iou_scores": [
+      1,
+      1,
+      3
+    ],
+    "pred_masks": [
+      1,
+      1,
+      3,
+      256,
+      256
+    ]
+  },
+  "nan": {
+    "iou_scores": false,
+    "pred_masks": false
+  },
+  "mem_reserved_GB": 3.23
+}
