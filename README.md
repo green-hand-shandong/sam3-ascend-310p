@@ -2,6 +2,8 @@
 
 [English](README_EN.md) | 中文
 
+**开源地址**：GitHub [green-hand-shandong/sam3-ascend-310p](https://github.com/green-hand-shandong/sam3-ascend-310p) · GitCode [xiwa1975/sam3-ascend-310p](https://gitcode.com/xiwa1975/sam3-ascend-310p)（双平台同步）
+
 **English TL;DR:** This repo documents how to run the Meta **SAM family** — **SAM 3.1 / SAM 3**, **SAM 2.1**, **SAM (original ViT-H)** and **MedSAM** — on **Huawei Ascend 310P** (Atlas 300I Duo) with `torch_npu`. It contains a reusable compat layer (`ascend310p_compat`, 3 patches), an operator-level test suite, per-model numerical verification and end-to-end demos. Verified on CANN 9.1 / torch_npu 2.10.post4 — all four models run in fp32 eager: SAM3.1 @1008 ≈ **2.4 s / 7.5 GB**, SAM2.1 ≈ **0.88 s / 3.7 GB**, SAM ViT-H ≈ **1.56 s / 7.3 GB**, MedSAM ≈ **0.56 s / 3.9 GB**.
 
 ---
